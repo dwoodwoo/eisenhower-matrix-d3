@@ -18,7 +18,8 @@ svg {
 
 svg circle {
   stroke-width: 2px;
-  stroke: #79A32B;
+  /*stroke: #79A32B;*/
+  stroke: #000;
   fill: transparent;
   cursor: pointer;
 }
@@ -49,6 +50,13 @@ svg circle:active {
 <body>
 
 	<script>
+JSONData = [
+  { "id": 1, "desc": "something", "urgency": 100, "importance": 10},
+  { "id": 2, "desc": "something", "urgency": 50, "importance": 20},
+  { "id": 3, "desc": "something", "urgency": 50, "importance": 30},
+  { "id": 4, "desc": "YA something", "urgency": 50, "importance": 40},
+  { "id": 5, "desc": "something and something", "urgency": 50, "importance": 50}
+];
 
 
 (function() {
@@ -56,14 +64,11 @@ svg circle:active {
 		var dataArray = [20, 40, 50, 60];
 
 
-JSONData = [
-  { "id": 3, "desc": "something", "urgency": 6, "importance": 7},
-  { "id": 1, "desc": "something more", "urgency": 7, "importance": 2},
-  { "id": 2, "desc": "something other", "urgency": 2, "importance": 9},
-  { "id": 4, "desc": "YA something", "urgency": 3, "importance": 10},
-  { "id": 5, "desc": "something and something", "urgency": 7, "importance": 4}
-]
 
+ 	var data = JSONData.slice();
+	var importanceFn = function(d) { return d.importance };
+	var urgencyFn = function(d) { return d.urgency };
+	var descFn = function(d) { return d.desc };
 
 
 
@@ -139,22 +144,22 @@ JSONData = [
 
 
 
-		var circle = canvas.append("circle")
-				// .attr("cx", function() {return widthScale(5); })
-				// .attr("cy", function() {return heightScale(250); })
-				// .attr("cx", 250)
-				// .attr("cy", 250)
-				.attr("cx", function() {return widthScale(-25); })
-				.attr("cy", function() {return heightScale(-25); })
-				.attr("r", 4);
+		// var circle = canvas.append("circle")
+		// 		// .attr("cx", function() {return widthScale(5); })
+		// 		// .attr("cy", function() {return heightScale(250); })
+		// 		// .attr("cx", 250)
+		// 		// .attr("cy", 250)
+		// 		.attr("cx", function() {return widthScale(-25); })
+		// 		.attr("cy", function() {return heightScale(-25); })
+		// 		.attr("r", 4);
 
 
-		var circle2 = canvas.append("circle")
-				// .attr("cx", function() {return widthScale(5); })
-				// .attr("cy", function() {return heightScale(250); })
-				.attr("cx", function() {return widthScale(25); })
-				.attr("cy", function() {return heightScale(25); })
-				.attr("r", 16);
+		// var circle2 = canvas.append("circle")
+		// 		// .attr("cx", function() {return widthScale(5); })
+		// 		// .attr("cy", function() {return heightScale(250); })
+		// 		.attr("cx", function() {return widthScale(25); })
+		// 		.attr("cy", function() {return heightScale(25); })
+		// 		.attr("r", 16);
 
 
 
@@ -254,6 +259,20 @@ var foo = canvas.append("foreignObject")
 		   .attr("font-family", "sans-serif")
 		   .attr("font-size", "20px")
 		   .attr("fill", "white");
+
+
+  var refreshGraph = function() {
+    canvas.selectAll("circle").data(data).enter()
+     .append("svg:circle")
+     .attr("r", 4)
+     .attr("cx", function(d) { return widthScale(urgencyFn(d)) })
+     .attr("cy", function(d) { return heightScale(importanceFn(d)) })
+     // .on("click", function(d) {
+     //   d3.select("#demoAddRandom .value").text("Date: " + d.created_at + " amount: " + d.amount)
+     // })
+  }
+refreshGraph();
+
 })();
 
 
