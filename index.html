@@ -2,6 +2,7 @@
 <head>
 	<title>D3 tut</title>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="./src/d3.promise.js"></script> 
 <style>
 	.domain { 
 	  fill: none; 
@@ -56,17 +57,21 @@ svg circle:active {
 </head>
 <body>
 
+<p id="banner">foo</p>
+
 	<script>
 JSONData = [
-  { "id": 1, "desc": "something", "urgency": 80, "importance": 10},
-  { "id": 2, "desc": "something", "urgency": -50, "importance": 20},
-  { "id": 3, "desc": "something", "urgency": 50, "importance": -30},
-  { "id": 4, "desc": "YA something", "urgency": 50, "importance": 40},
-  { "id": 5, "desc": "something and something", "urgency": 50, "importance": 50}
+  { "id": 1, "desc": "something", "urgency": 90, "importance": 10, "url": "http://google.com"},
+  { "id": 2, "desc": "something", "urgency": -50, "importance": 20, "url": "http://google.com"},
+  { "id": 3, "desc": "something", "urgency": 50, "importance": -30, "url": "http://google.com"},
+  { "id": 4, "desc": "YA something", "urgency": 50, "importance": 40, "url": "http://google.com"},
+  { "id": 5, "desc": "something and something", "urgency": 50, "importance": 50, "url": "http://google.com"}
 ];
 
+var promise = d3.promise.json('http://127.0.0.1:8080/myjsondata.json')
 
-(function() {
+
+promise.then(function(data) {
 // lesson 6 complete, experiment with y-axis
 		var dataArray = [20, 40, 50, 60];
 
@@ -130,6 +135,7 @@ JSONData = [
 		var yaxis = d3.svg.axis()
 					.ticks(5)
 					.scale(heightScale);
+	
 
 
 
@@ -138,7 +144,11 @@ JSONData = [
 					.attr("width", width + margin.left + margin.right)
 					.attr("height", height + margin.top + margin.bottom)
 					.append("g")
-					.attr("transform", "translate(" + margin.left + ","+ margin.top +")");
+					.attr("transform", "translate(" + margin.left + ","+ margin.top +")"); 
+
+
+
+
 	var tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
@@ -283,22 +293,29 @@ var foo = canvas.append("foreignObject")
 	.on("mouseover", function(d) { 
 	    d3.select(this).style("fill", "orange");
 	    tooltip.transition()
-           .duration(200)
+           .duration(50)
            .style("opacity", .9);
         tooltip.html(descFn(d))
 		.style("left", (d3.event.pageX + 5) + "px")
 		.style("top", (d3.event.pageY - 28) + "px");
 	})
-	.on("mouseout",  function(d) { 
-	    d3.select(this).style("fill", "green"); 
-	    tooltip.transition()
-           .duration(500)
-           .style("opacity", 0);
-	});
+	.on("click", function(d) {
+        d3.select("#banner").html(d.desc + "<br>importance: " + d.importance + "<br>urgency: " + d.urgency)
+     })
+
+		// window.location = d.url;
+
+	// .on("mouseout",  function(d) { 
+	//     d3.select(this).style("fill", "green"); 
+	//     tooltip.transition()
+ //           .duration(500)
+ //           .style("opacity", 0);
+	// });
   }
 refreshGraph();
 
-})();
+
+  }, function(error){});
 
 
 	</script>
