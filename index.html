@@ -1,0 +1,221 @@
+<html>
+<head>
+	<title>Eisenhower Priority Matrix</title>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="./src/d3.promise.js"></script> 
+<style>
+	.domain { 
+	  fill: none; 
+	  stroke: black; 
+	  stroke-width; 1; 
+	} 
+</style>
+    <style>
+svg {
+  vertical-align: middle;
+  background: rgba(255,255,255, 0.2);
+  box-shadow: inset 0 0 3px 0px #CECECE;
+}
+
+svg circle {
+  stroke-width: 2px;
+  /*stroke: #79A32B;*/
+  stroke: #000;
+  fill: transparent;
+  cursor: pointer;
+}
+
+svg circle:active {
+  stroke: #45D3C7;
+}
+
+
+.tooltip {
+	  position: absolute;
+	  width: 200px;
+	  height: 28px;
+	  pointer-events: none;
+	}
+</style>
+
+</head>
+<body>
+
+<p id="banner">foo</p>
+
+	<script>
+JSONData = [
+  { "id": 1, "desc": "something", "urgency": 90, "importance": 10, "url": "http://google.com"},
+  { "id": 2, "desc": "something", "urgency": -50, "importance": 20, "url": "http://google.com"},
+  { "id": 3, "desc": "something", "urgency": 50, "importance": -30, "url": "http://google.com"},
+  { "id": 4, "desc": "YA something", "urgency": 50, "importance": 40, "url": "http://google.com"},
+  { "id": 5, "desc": "something and something", "urgency": 50, "importance": 50, "url": "http://google.com"}
+];
+
+var promise = d3.promise.json('http://127.0.0.1:8080/myjsondata.json')
+
+
+promise.then(function(data) {
+
+ 	var data = JSONData.slice();
+	var importanceFn = function(d) { return d.importance };
+	var urgencyFn = function(d) { return d.urgency };
+	var descFn = function(d) { return d.desc };
+
+
+	var margin = {top: 50, right: 20, bottom: 50, left: 20};
+	var mydomain = {xspan: 200, yspan: 200 };
+
+
+	var width = 800 - margin.left - margin.right;
+	var height = 800 - margin.top - margin.bottom;
+
+	var xunittranslate = width/mydomain.xspan;
+	var yunittranslate = height/mydomain.yspan;
+
+	var widthScale = d3.scale.linear()
+						.domain([-100, 100])
+						.range([0, width]);
+
+	var heightScale = d3.scale.linear()
+						.domain([100, -100])
+						.range([0, height]);
+
+
+
+
+	var xaxis = d3.svg.axis()
+				.ticks(5)
+				.scale(widthScale);
+
+	var yaxis = d3.svg.axis()
+				.ticks(5)
+				.scale(heightScale);
+
+
+
+	var canvas = d3.select("body")
+				.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + ","+ margin.top +")"); 
+
+	var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+
+//setup background graphics on chart
+	var rect1 = canvas.append("rect")
+		.attr("width", function(){return 95*xunittranslate; } )
+		.attr("height", function(){return 95*yunittranslate; } )
+		.attr("fill", "grey")
+		.attr("x", function(){return widthScale(5); })
+		.attr("y", function(){return heightScale(100); });
+
+
+	var text1 = canvas.append("text")
+	   .html("Urgent, Important")
+	   .attr("text-anchor", "middle")
+	   .attr("x", function(){return widthScale(5+95/2); })
+	   .attr("y", function(){return heightScale(5+95/2); })
+	   .attr("font-family", "sans-serif")
+	   .attr("font-size", "20px")
+	   .attr("fill", "white");
+
+
+	var rect2 = canvas.append("rect")
+		.attr("width", function(){return 95*xunittranslate; } )
+		.attr("height", function(){return 95*yunittranslate; } )
+		.attr("fill", "grey")
+		.attr("x", function(){return widthScale(5); })
+		.attr("y", function(){return heightScale(-5); });
+
+	var text2 = canvas.append("text")
+	   .text("Urgent, Not Important")
+	   .attr("text-anchor", "middle")
+	   .attr("x", function(){return widthScale(5+95/2); })
+	   .attr("y", function(){return heightScale(-5-95/2); })
+	   .attr("font-family", "sans-serif")
+	   .attr("font-size", "20px")
+	   .attr("fill", "white");
+
+
+	var rect3 = canvas.append("rect")
+		.attr("width", function(){return 95*xunittranslate; } )
+		.attr("height", function(){return 95*yunittranslate; } )
+		.attr("fill", "grey")
+		.attr("x", function(){return widthScale(-100); })
+		.attr("y", function(){return heightScale(-5); });
+
+	var text3 = canvas.append("text")
+	   .text("Not Urgent, Not Important")
+	   .attr("text-anchor", "middle")
+	   .attr("x", function(){return widthScale(-100+95/2); })
+	   .attr("y", function(){return heightScale(-5-95/2); })
+	   .attr("font-family", "sans-serif")
+	   .attr("font-size", "20px")
+	   .attr("fill", "white");
+
+	var rect4 = canvas.append("rect")
+		.attr("width", function(){return 95*xunittranslate; } )
+		.attr("height", function(){return 95*yunittranslate; } )
+		.attr("fill", "grey")
+		.attr("x", function(){return widthScale(-100); })
+		.attr("y", function(){return heightScale(100); });
+
+	var text4 = canvas.append("text")
+	   .text("Not Urgent, Important")
+	   .attr("text-anchor", "middle")
+	   .attr("x", function(){return widthScale(-100+95/2); })
+	   .attr("y", function(){return heightScale(+5+95/2); })
+	   .attr("font-family", "sans-serif")
+	   .attr("font-size", "20px")
+	   .attr("fill", "white");
+
+
+			
+//place axes
+	canvas.append("g")
+		.attr("transform", "translate(0,"+ height/2 +")")
+		.call(xaxis);
+
+	canvas.append("g")
+		// .attr("transform", "rotate(90) translate(0, "+ -width/2 +")")
+		.attr("transform", "rotate(90) translate(0, "+ -width/2 +")")
+		.call(yaxis);
+
+
+
+
+  	var refreshGraph = function() {
+	    canvas.selectAll("circle").data(data).enter()
+	     	.append("svg:circle")
+	     	.attr("r", 4)
+	     	.attr("cx", function(d) { return widthScale(urgencyFn(d)) })
+	     	.attr("cy", function(d) { return heightScale(importanceFn(d)) })
+		.on("mouseover", function(d) { 
+		    d3.select(this).style("fill", "orange");
+		    tooltip.transition()
+	           .duration(50)
+	           .style("opacity", .9);
+	        tooltip.html(descFn(d))
+			.style("left", (d3.event.pageX + 5) + "px")
+			.style("top", (d3.event.pageY - 28) + "px");
+			})
+		.on("click", function(d) {
+	        d3.select("#banner").html(d.desc + "<br>importance: " + d.importance + "<br>urgency: " + d.urgency)
+	    		})
+  		}
+
+	refreshGraph();
+
+	}, function(error){});
+
+
+	</script>
+
+
+</body>
+</html>
