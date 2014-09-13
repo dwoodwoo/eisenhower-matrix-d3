@@ -52,7 +52,7 @@ JSONData = [
   { "id": 5, "desc": "something and something", "urgency": 50, "importance": 50, "url": "http://google.com"}
 ];
 
-var promise = d3.promise.json('http://127.0.0.1:8080/myjsondata.json')
+var promise = d3.promise.json('./myjsondata.json')
 
 
 promise.then(function(data) {
