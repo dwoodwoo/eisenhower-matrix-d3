@@ -20,3 +20,5 @@ git clone https://github.com/dwoodwoo/eisenhower-matrix-d3
 4) open http://127.0.0.1:8080/
 
 done.
+
+demo: http://dwoodwoo.github.io/eisenhower-matrix-d3/
